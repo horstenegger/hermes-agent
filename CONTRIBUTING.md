@@ -920,3 +920,12 @@ test(tools): add unit tests for file_operations
 ## License
 
 By contributing, you agree that your contributions will be licensed under the [MIT License](LICENSE).
+
+## AI review commands
+
+- `@codex review`: request the existing Codex PR review.
+- `@claude review once`: request one Claude PR review.
+- `@claude review`: request Claude PR review. If managed Claude Code Review is enabled later, this also subscribes the PR to future push reviews.
+- `@claude <question or task>`: ask Claude Code for help on an issue or PR.
+
+Prefer `@claude review once` unless you intentionally want future pushes on the PR reviewed by managed Claude Code Review.
