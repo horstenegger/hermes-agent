@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Praktische lokale AI-setup voor een marine engineer met Windows, 32 GB RAM en een Nvidia GPU met 8 GB VRAM.">
+  <title>Lokale AI-assistent voor een Marine Engineer</title>
+  <style>
+    :root{
+      --bg:#f4f7f9;
+      --surface:#ffffff;
+      --surface-2:#eef3f6;
+      --text:#13202a;
+      --muted:#5f6d78;
+      --line:#d9e2e7;
+      --accent:#0b6174;
+      --accent-2:#0f7b91;
+      --accent-soft:#e4f2f5;
+      --good:#236947;
+      --warn:#8a5d00;
+      --danger:#9a3434;
+      --shadow:0 12px 30px rgba(18, 42, 55, .08);
+      --radius:18px;
+      --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at top right, rgba(15,123,145,.08), transparent 28rem),
+        var(--bg);
+      color:var(--text);
+      font:16px/1.65 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:3px}
+    a:hover{color:var(--accent-2)}
+    .wrap{width:min(1120px,calc(100% - 32px));margin:auto}
+    header{padding:60px 0 28px}
+    .eyebrow{
+      display:inline-flex;gap:8px;align-items:center;
+      padding:7px 11px;border:1px solid #c8dce1;border-radius:999px;
+      background:rgba(255,255,255,.72);color:var(--accent);font-weight:700;font-size:.82rem;
+      letter-spacing:.03em;text-transform:uppercase
+    }
+    h1{font-size:clamp(2.25rem,5vw,4.4rem);line-height:1.04;letter-spacing:-.045em;margin:20px 0 18px;max-width:900px}
+    .lead{font-size:clamp(1.08rem,2vw,1.3rem);max-width:780px;color:var(--muted);margin:0}
+    .hardware{
+      margin:30px 0 0;display:flex;flex-wrap:wrap;gap:10px
+    }
+    .pill{padding:9px 12px;border-radius:11px;background:var(--surface);border:1px solid var(--line);box-shadow:0 4px 14px rgba(18,42,55,.04);font-weight:650}
+    nav{
+      position:sticky;top:0;z-index:10;
+      background:rgba(244,247,249,.91);backdrop-filter:blur(12px);
+      border-top:1px solid rgba(217,226,231,.65);border-bottom:1px solid var(--line)
+    }
+    nav .wrap{display:flex;overflow:auto;gap:4px;padding:10px 0}
+    nav a{white-space:nowrap;text-decoration:none;color:var(--muted);font-weight:650;padding:8px 11px;border-radius:9px;font-size:.92rem}
+    nav a:hover{background:var(--surface);color:var(--text)}
+    main{padding:34px 0 80px}
+    section{scroll-margin-top:74px;margin:0 0 54px}
+    h2{font-size:clamp(1.6rem,3vw,2.2rem);letter-spacing:-.025em;line-height:1.15;margin:0 0 10px}
+    h3{font-size:1.12rem;margin:0 0 8px}
+    .section-intro{color:var(--muted);max-width:800px;margin:0 0 22px}
+    .hero-card{
+      background:linear-gradient(135deg,#0a5061,#0d7489);
+      color:#fff;border-radius:24px;padding:30px;box-shadow:var(--shadow);margin:0 0 52px
+    }
+    .hero-card h2{color:#fff}
+    .hero-card p{color:rgba(255,255,255,.86);max-width:760px}
+    .recommendation{
+      display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:24px
+    }
+    .recommendation div{background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.18);border-radius:15px;padding:16px}
+    .recommendation small{display:block;color:rgba(255,255,255,.68);margin-bottom:3px}
+    .recommendation strong{font-size:1.03rem}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+    .card{
+      background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+      padding:22px;box-shadow:0 6px 20px rgba(18,42,55,.035)
+    }
+    .card p:last-child{margin-bottom:0}
+    .num{
+      display:inline-grid;place-items:center;width:34px;height:34px;border-radius:10px;
+      background:var(--accent-soft);color:var(--accent);font-weight:800;margin-bottom:13px
+    }
+    .tag{display:inline-block;padding:4px 8px;border-radius:7px;background:var(--surface-2);font-size:.78rem;font-weight:750;color:var(--muted)}
+    .flow{
+      background:#0d1921;color:#eff7fa;border-radius:24px;padding:28px;overflow:hidden
+    }
+    .flow-title{font-weight:800;margin-bottom:20px;color:#fff}
+    .flow-row{
+      display:flex;align-items:stretch;justify-content:center;gap:9px;flex-wrap:wrap
+    }
+    .node{
+      min-width:160px;flex:1 1 180px;max-width:230px;
+      padding:16px;border:1px solid #34505f;border-radius:14px;background:#142833
+    }
+    .node strong{display:block;color:#fff;margin-bottom:3px}
+    .node span{font-size:.87rem;color:#adc0ca}
+    .arrow{align-self:center;color:#7fa2b3;font-weight:900;font-size:1.35rem}
+    .example{
+      border-left:4px solid var(--accent);background:var(--accent-soft);
+      padding:14px 16px;border-radius:0 12px 12px 0;margin:14px 0 0
+    }
+    .example strong{display:block;margin-bottom:4px;font-size:.82rem;text-transform:uppercase;letter-spacing:.03em;color:var(--accent)}
+    ul.check{list-style:none;padding:0;margin:12px 0 0}
+    ul.check li{padding:6px 0 6px 27px;position:relative}
+    ul.check li:before{content:"✓";position:absolute;left:0;color:var(--good);font-weight:900}
+    ul.cross{list-style:none;padding:0}
+    ul.cross li{padding:6px 0 6px 27px;position:relative}
+    ul.cross li:before{content:"×";position:absolute;left:2px;color:var(--danger);font-weight:900;font-size:1.2rem}
+    .table-wrap{overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+    table{width:100%;border-collapse:collapse;min-width:690px}
+    th,td{padding:14px 16px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+    th{font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:#f8fafb}
+    tr:last-child td{border-bottom:0}
+    code{font-family:var(--mono);font-size:.92em}
+    pre{
+      position:relative;margin:14px 0 0;padding:17px 18px;overflow:auto;border-radius:14px;
+      background:#0d1921;color:#eaf4f7;border:1px solid #273e4b;font:14px/1.55 var(--mono)
+    }
+    .steps{counter-reset:step;display:grid;gap:13px}
+    .step{
+      counter-increment:step;background:var(--surface);border:1px solid var(--line);
+      border-radius:15px;padding:18px 18px 18px 58px;position:relative
+    }
+    .step:before{
+      content:counter(step);position:absolute;left:16px;top:15px;
+      width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+      background:var(--accent);color:#fff;font-weight:800
+    }
+    .step strong{display:block;margin-bottom:3px}
+    .note{padding:18px;border-radius:14px;border:1px solid #ecd8a9;background:#fff8e8;color:#5e470c}
+    .danger-note{padding:18px;border-radius:14px;border:1px solid #e7caca;background:#fff5f5;color:#6e2828}
+    .sources{font-size:.94rem}
+    footer{border-top:1px solid var(--line);padding:28px 0 45px;color:var(--muted);font-size:.9rem}
+    @media(max-width:850px){
+      .recommendation,.grid-3{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+    @media(max-width:650px){
+      header{padding-top:38px}
+      .grid,.grid-3,.recommendation{grid-template-columns:1fr}
+      .arrow{display:none}
+      .node{max-width:none}
+      .hero-card{padding:23px}
+    }
+    @media(prefers-color-scheme:dark){
+      :root{
+        --bg:#0d151a;--surface:#111e25;--surface-2:#192932;--text:#edf4f6;--muted:#a5b4bc;
+        --line:#293b45;--accent:#64c3d5;--accent-2:#8bd8e6;--accent-soft:#122d35;
+        --shadow:0 12px 30px rgba(0,0,0,.18)
+      }
+      body{background:radial-gradient(circle at top right,rgba(49,148,169,.12),transparent 28rem),var(--bg)}
+      nav{background:rgba(13,21,26,.91)}
+      th{background:#132129}
+      .note{background:#2b2413;border-color:#5a4922;color:#ead89f}
+      .danger-note{background:#2a1818;border-color:#5f3232;color:#f0b8b8}
+      .eyebrow{background:rgba(17,30,37,.8);border-color:#34505c}
+      .pill{box-shadow:none}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="eyebrow">Praktische lokale AI-setup</div>
+    <h1>Een lokale AI-assistent voor een marine engineer</h1>
+    <p class="lead">Voor een Windows-laptop met 32 GB RAM en een Nvidia-GPU met 8 GB VRAM. Gericht op bestanden vinden, technische documenten begrijpen, berekeningen uitvoeren en tekeningen analyseren.</p>
+    <div class="hardware">
+      <span class="pill">Windows</span>
+      <span class="pill">32 GB RAM</span>
+      <span class="pill">8 GB Nvidia VRAM</span>
+      <span class="pill">Alles lokaal mogelijk</span>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div class="wrap">
+    <a href="#advies">Advies</a>
+    <a href="#architectuur">Hoe het werkt</a>
+    <a href="#mogelijkheden">Mogelijkheden</a>
+    <a href="#stack">Software</a>
+    <a href="#installatie">Installatie</a>
+    <a href="#veiligheid">Belangrijk</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <section class="hero-card" id="advies">
+    <h2>De korte versie</h2>
+    <p>Gebruik <strong>Hermes Agent</strong> als centrale assistent en <strong>Ollama + Qwen3.5-9B</strong> als lokaal AI-model. Hermes geeft het model vervolgens veilige toegang tot bestanden, Python, PDF-verwerking en technische tools.</p>
+    <div class="recommendation">
+      <div><small>Centrale assistent</small><strong>Hermes Agent</strong></div>
+      <div><small>Lokaal model</small><strong>Qwen3.5-9B</strong></div>
+      <div><small>Model draaien</small><strong>Ollama</strong></div>
+      <div><small>Rekenen</small><strong>Python + Pint</strong></div>
+    </div>
+  </section>
+
+  <section id="architectuur">
+    <h2>Hoe hangt alles samen?</h2>
+    <p class="section-intro">Het AI-model is alleen het “brein”. Hermes is de laag die daadwerkelijk bestanden kan zoeken, programma’s kan aanroepen en berekeningen kan laten uitvoeren.</p>
+
+    <div class="flow">
+      <div class="flow-title">Eenvoudige architectuur</div>
+      <div class="flow-row">
+        <div class="node">
+          <strong>Marine engineer</strong>
+          <span>Stelt een vraag in normale taal</span>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node">
+          <strong>Hermes Agent</strong>
+          <span>Bepaalt welke tools nodig zijn</span>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node">
+          <strong>Qwen3.5-9B</strong>
+          <span>Redeneert en interpreteert</span>
+        </div>
+        <div class="arrow">↔</div>
+        <div class="node">
+          <strong>Lokale tools</strong>
+          <span>Bestanden · Python · PDF · CAD</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="mogelijkheden">
+    <h2>Wat kan hij er praktisch mee?</h2>
+    <p class="section-intro">De interessantste toepassingen voor een engineer zijn niet algemene chatvragen, maar werkzaamheden waarbij Hermes lokale tools en documenten gebruikt.</p>
+
+    <div class="grid">
+      <article class="card">
+        <div class="num">1</div>
+        <h3>Bestanden en informatie terugvinden</h3>
+        <p>Hermes kan lokale mappen doorzoeken en relevante bestanden of passages openen.</p>
+        <ul class="check">
+          <li>Handleidingen terugvinden</li>
+          <li>Rapporten doorzoeken</li>
+          <li>Revisies vergelijken</li>
+          <li>Bestandspad en bron vermelden</li>
+        </ul>
+        <div class="example">
+          <strong>Voorbeeldvraag</strong>
+          Zoek alle documenten waarin Wärtsilä 8L20, cylinder 4 en exhaust temperature voorkomen. Geef het bestandspad en de relevante passages.
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="num">2</div>
+        <h3>PDF’s en technische manuals lezen</h3>
+        <p>Hermes kan tekst uit gewone en gescande PDF’s halen en vervolgens gericht informatie zoeken.</p>
+        <ul class="check">
+          <li>Manuals analyseren</li>
+          <li>Tabellen uitlezen</li>
+          <li>OCR op scans</li>
+          <li>Verschillende documenten vergelijken</li>
+        </ul>
+        <div class="example">
+          <strong>Voorbeeldvraag</strong>
+          Zoek in de overhaul manual de toegestane bearing clearance en vermeld pagina, revisie en gebruikte waarde.
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="num">3</div>
+        <h3>Technische berekeningen uitvoeren</h3>
+        <p>Laat het model niet hoofdrekenen. Hermes kan Python gebruiken zodat de berekening werkelijk wordt uitgevoerd en gecontroleerd.</p>
+        <ul class="check">
+          <li>Eenheden controleren met Pint</li>
+          <li>Formules uitwerken</li>
+          <li>NumPy / SciPy / SymPy gebruiken</li>
+          <li>Resultaten reproduceren</li>
+        </ul>
+        <div class="example">
+          <strong>Voorbeeldvraag</strong>
+          Bereken de benodigde seawater flow voor 420 kW warmtelast en 8 °C temperatuurstijging. Toon aannames, formule, units en sanity check.
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="num">4</div>
+        <h3>Technische tekeningen analyseren</h3>
+        <p>Qwen3.5 kan afbeeldingen bekijken. Exporteer complexe CAD-tekeningen bij voorkeur eerst naar een scherpe PDF of PNG.</p>
+        <ul class="check">
+          <li>P&amp;ID’s volgen</li>
+          <li>Tags en componenten herkennen</li>
+          <li>Revisies visueel vergelijken</li>
+          <li>Title block en maatvoering uitlezen</li>
+        </ul>
+        <div class="example">
+          <strong>Voorbeeldvraag</strong>
+          Volg vanaf pump P-102 de discharge line tot de heat exchanger en noteer alle valves en instrument tags onderweg.
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="num">5</div>
+        <h3>Eenvoudige CAD-modellen genereren</h3>
+        <p>Hermes kan parametrische code schrijven voor bijvoorbeeld CadQuery of OpenSCAD en die code vervolgens uitvoeren.</p>
+        <ul class="check">
+          <li>Mounting plates</li>
+          <li>Brackets</li>
+          <li>Flanges en eenvoudige onderdelen</li>
+          <li>STEP / DXF / STL export</li>
+        </ul>
+        <div class="example">
+          <strong>Voorbeeldvraag</strong>
+          Maak een 180 × 120 × 8 mm mounting plate met vier M10-clearance holes en een centraal gat Ø90 mm. Exporteer als STEP.
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="num">6</div>
+        <h3>Een eigen engineering-kennisbank</h3>
+        <p>Bij duizenden documenten kan een lokale vector-database zoals Chroma worden toegevoegd voor semantisch zoeken.</p>
+        <ul class="check">
+          <li>Zoeken op betekenis, niet alleen woorden</li>
+          <li>Per schip of installatie filteren</li>
+          <li>Fabrikant, equipment en revisie opslaan</li>
+          <li>Historische rapporten terugvinden</li>
+        </ul>
+        <div class="example">
+          <strong>Voorbeeldvraag</strong>
+          Zoek alles wat we eerder hebben vastgelegd over hoge exhaust temperatures op MAN 32/40 engines.
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="stack">
+    <h2>Aanbevolen software</h2>
+    <p class="section-intro">Zo weinig mogelijk losse programma’s. Hermes neemt de orkestratie voor zijn rekening.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Functie</th><th>Software</th><th>Waarom</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Centrale agent</td><td><strong>Hermes Agent</strong></td><td>Verbindt model, bestanden, terminal, code en skills.</td></tr>
+          <tr><td>Lokaal model draaien</td><td><strong>Ollama</strong></td><td>Eenvoudigste manier om lokale modellen op Windows te draaien.</td></tr>
+          <tr><td>Hoofdmodel</td><td><strong>Qwen3.5-9B</strong></td><td>Goede balans tussen redeneervermogen, vision en 8 GB VRAM.</td></tr>
+          <tr><td>Snelle fallback</td><td>Qwen3.5-4B</td><td>Sneller en lichter wanneer 9B te zwaar blijkt.</td></tr>
+          <tr><td>Berekeningen</td><td>Python + Pint</td><td>Werkelijke berekening en controle van eenheden.</td></tr>
+          <tr><td>Wiskunde</td><td>NumPy · SciPy · SymPy</td><td>Numerieke en symbolische berekeningen.</td></tr>
+          <tr><td>Technische modellen</td><td>CadQuery / OpenSCAD</td><td>Parametrische CAD via code.</td></tr>
+          <tr><td>Grote kennisbank</td><td>Chroma</td><td>Semantisch zoeken in grote documentcollecties.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="installatie">
+    <h2>Praktisch startplan</h2>
+    <p class="section-intro">Begin klein. Eerst zorgen dat de kern goed werkt; daarna pas CAD en een grote kennisbank toevoegen.</p>
+
+    <div class="steps">
+      <div class="step">
+        <strong>Controleer eerst welke Nvidia-GPU erin zit.</strong>
+        Open een terminal en voer uit:
+        <pre>nvidia-smi</pre>
+      </div>
+
+      <div class="step">
+        <strong>Installeer Ollama en haal het hoofdmodel binnen.</strong>
+        <pre>ollama pull qwen3.5:9b</pre>
+      </div>
+
+      <div class="step">
+        <strong>Installeer ook het lichtere reservemodel.</strong>
+        <pre>ollama pull qwen3.5:4b</pre>
+      </div>
+
+      <div class="step">
+        <strong>Installeer Hermes Agent en koppel het aan Ollama.</strong>
+        Hermes kan vervolgens het lokale Qwen-model als brein gebruiken.
+      </div>
+
+      <div class="step">
+        <strong>Maak één duidelijke engineering-map.</strong>
+        Geef Hermes liever alleen toegang tot relevante projectmappen dan tot de volledige C:-schijf.
+        <pre>D:\Marine Engineering\
+├── Manuals
+├── Drawings
+├── Reports
+├── Calculations
+├── Certificates
+└── Vessel Documentation</pre>
+      </div>
+
+      <div class="step">
+        <strong>Voeg Python-pakketten voor engineering toe.</strong>
+        <pre>pip install numpy scipy sympy pint pandas matplotlib</pre>
+      </div>
+
+      <div class="step">
+        <strong>Pas daarna uitbreiden.</strong>
+        Voeg CadQuery/OpenSCAD toe voor geometrie en Chroma wanneer de documentcollectie groot genoeg wordt om semantische zoekfuncties zinvol te maken.
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Waarom Hermes in plaats van meerdere AI-programma’s?</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Zonder Hermes</h3>
+        <ul class="cross">
+          <li>Een chatprogramma voor het model</li>
+          <li>Een ander programma voor documenten</li>
+          <li>Weer iets anders voor Python</li>
+          <li>Losse workflows voor bestanden en CAD</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Met Hermes</h3>
+        <ul class="check">
+          <li>Eén centrale interface</li>
+          <li>Het model kiest de juiste tool</li>
+          <li>Lokale bestanden kunnen onderdeel van de workflow zijn</li>
+          <li>Herbruikbare engineering-skills zijn mogelijk</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Interessant op langere termijn</h2>
+    <p class="section-intro">De grootste winst ontstaat wanneer Hermes niet alleen een algemene chatbot blijft, maar procedures en kennis van zijn eigen werk krijgt.</p>
+    <div class="grid-3">
+      <div class="card"><span class="tag">Skill</span><h3>/pump-sizing</h3><p>Vaste procedure voor pompcapaciteit, head, units en controles.</p></div>
+      <div class="card"><span class="tag">Skill</span><h3>/pid-analysis</h3><p>Systematisch P&amp;ID’s lezen, tags verzamelen en flow paths volgen.</p></div>
+      <div class="card"><span class="tag">Skill</span><h3>/wartsila-20</h3><p>Eigen documentatie, manuals en procedures rond één machinetype.</p></div>
+      <div class="card"><span class="tag">Skill</span><h3>/heat-exchanger</h3><p>Warmtebalansen, flow en temperatuurverschillen reproduceerbaar berekenen.</p></div>
+      <div class="card"><span class="tag">Skill</span><h3>/vessel-name</h3><p>Documentatie, historie en technische gegevens van één specifiek schip.</p></div>
+      <div class="card"><span class="tag">Skill</span><h3>/cadquery</h3><p>Vaste regels voor parametrische onderdelen en export naar engineering-formaten.</p></div>
+    </div>
+  </section>
+
+  <section id="veiligheid">
+    <h2>Belangrijke beperkingen</h2>
+    <div class="danger-note">
+      <strong>Een lokaal AI-model is geen gecertificeerde engineer.</strong><br>
+      Veiligheidskritische berekeningen, class-compliance, materiaalkeuzes en definitieve ontwerpbeslissingen moeten altijd door een bevoegd persoon worden gecontroleerd.
+    </div>
+
+    <div style="height:14px"></div>
+
+    <div class="note">
+      <strong>Geef de agent niet onbeperkt schrijfrecht.</strong><br>
+      Begin met alleen de benodigde mappen en laat verwijderen, overschrijven of verplaatsen van bestanden alleen gebeuren na expliciete toestemming.
+    </div>
+
+    <div class="grid" style="margin-top:16px">
+      <div class="card">
+        <h3>Laat Hermes altijd:</h3>
+        <ul class="check">
+          <li>Bronbestand en pagina vermelden</li>
+          <li>Aannames expliciet maken</li>
+          <li>Eenheden tonen</li>
+          <li>Berekeningen daadwerkelijk uitvoeren</li>
+          <li>Onleesbare informatie als onzeker markeren</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Laat Hermes nooit:</h3>
+        <ul class="cross">
+          <li>Ontbrekende waardes stilletjes verzinnen</li>
+          <li>Een maat uit de afbeelding “op gevoel” afleiden</li>
+          <li>Een oude revisie stilzwijgend als actueel behandelen</li>
+          <li>Safety-critical uitkomsten zonder menselijke controle afronden</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Conclusie</h2>
+    <div class="card">
+      <p><strong>De beste aanpak is niet om het grootste model te zoeken dat nét in 8 GB VRAM past.</strong></p>
+      <p>Een relatief compact model zoals Qwen3.5-9B wordt veel nuttiger wanneer Hermes het toegang geeft tot echte bestanden, Python-berekeningen, PDF-verwerking en gespecialiseerde engineering-tools.</p>
+      <p>Voor deze laptop is dat waarschijnlijk een veel bruikbaardere engineering-assistent dan een zwaarder model zonder tools.</p>
+    </div>
+  </section>
+
+  <section class="sources">
+    <h2>Handige links</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Hermes Agent</h3>
+        <p><a href="https://hermes-agent.nousresearch.com/" target="_blank" rel="noopener">Hermes Agent documentatie</a></p>
+        <p><a href="https://github.com/NousResearch/hermes-agent" target="_blank" rel="noopener">Hermes Agent op GitHub</a></p>
+      </div>
+      <div class="card">
+        <h3>Lokale modellen & engineering</h3>
+        <p><a href="https://ollama.com/" target="_blank" rel="noopener">Ollama</a></p>
+        <p><a href="https://ollama.com/library/qwen3.5" target="_blank" rel="noopener">Qwen3.5 voor Ollama</a></p>
+        <p><a href="https://cadquery.readthedocs.io/" target="_blank" rel="noopener">CadQuery</a> · <a href="https://openscad.org/" target="_blank" rel="noopener">OpenSCAD</a></p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    Praktisch voorstel voor een lokale marine-engineering AI-assistent · Windows · 32 GB RAM · 8 GB Nvidia VRAM
+  </div>
+</footer>
+</body>
+</html>
